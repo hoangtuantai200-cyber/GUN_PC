@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game Test - PC</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:Arial,sans-serif;
+}
+
+canvas{
+  display:block;
+}
+
+/* ================= START ================= */
+
+#startScreen{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #263238 0%,
+      #101214 55%,
+      #050505 100%
+    );
+
+  color:white;
+  cursor:pointer;
+}
+
+#startScreen h1{
+  margin:0 0 10px;
+  font-size:44px;
+  letter-spacing:4px;
+}
+
+#startScreen p{
+  margin:5px 0;
+  color:#aaa;
+}
+
+#startButton{
+  margin-top:28px;
+
+  padding:16px 45px;
+
+  border:2px solid white;
+  border-radius:8px;
+
+  background:#ffffff12;
+  color:white;
+
+  font-size:18px;
+  font-weight:bold;
+
+  cursor:pointer;
+  transition:.15s;
+}
+
+#startButton:hover{
+  background:white;
+  color:#111;
+  transform:scale(1.04);
+}
+
+#startButton:active{
+  transform:scale(.97);
+}
+
+/* ================= CROSSHAIR ================= */
+
+#crosshair{
+  position:fixed;
+
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%);
+
+  z-index:100;
+
+  width:32px;
+  height:32px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:white;
+
+  font-family:Arial,sans-serif;
+  font-size:27px;
+  font-weight:normal;
+
+  line-height:1;
+
+  text-shadow:
+    0 0 2px #000,
+    0 0 4px #000;
+
+  pointer-events:none;
+}
+
+#crosshair::after{
+  content:"⊙";
+}
+
+/* ================= HUD ================= */
+
+#hud{
+  position:fixed;
+  left:20px;
+  top:20px;
+
+  z-index:50;
+
+  color:white;
+
+  font-size:15px;
+
+  text-shadow:
+    0 2px 3px #000;
+
+  pointer-events:none;
+}
+
+#hp{
+  width:220px;
+  height:16px;
+
+  margin-top:7px;
+
+  border:2px solid white;
+  background:#222;
+}
+
+#hpBar{
+  width:100%;
+  height:100%;
+  background:#25d366;
+}
+
+#ammo{
+  margin-top:8px;
+
+  font-size:20px;
+  font-weight:bold;
+}
+
+/* ================= INFO ================= */
+
+#info{
+  position:fixed;
+
+  right:20px;
+  top:20px;
+
+  z-index:50;
+
+  color:white;
+
+  text-align:right;
+
+  font-size:13px;
+  line-height:1.6;
+
+  text-shadow:
+    0 2px 3px #000;
+
+  pointer-events:none;
+}
+
+/* ================= LOCK MESSAGE ================= */
+
+#lockMessage{
+  position:fixed;
+
+  left:50%;
+  bottom:30px;
+
+  transform:translateX(-50%);
+
+  z-index:90;
+
+  padding:9px 16px;
+
+  border-radius:20px;
+
+  background:#0009;
+
+  color:white;
+
+  font-size:13px;
+
+  display:none;
+
+  pointer-events:none;
+}
+
+/* ================= DAMAGE ================= */
+
+#damage{
+  position:fixed;
+
+  left:50%;
+  top:42%;
+
+  transform:translate(-50%,-50%);
+
+  z-index:200;
+
+  color:#ff3b30;
+
+  font-size:28px;
+  font-weight:bold;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  text-shadow:
+    0 2px 4px #000;
+
+  transition:opacity .1s;
+}
+
+/* ================= SETTINGS ================= */
+
+#settings{
+  position:fixed;
+
+  inset:0;
+
+  z-index:5000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:#0009;
+}
+
+#settingsBox{
+  width:360px;
+  max-width:90%;
+
+  padding:25px;
+
+  border-radius:14px;
+
+  background:#17191c;
+
+  color:white;
+
+  box-shadow:
+    0 10px 50px #000;
+}
+
+#settingsBox h2{
+  margin-top:0;
+}
+
+.setting{
+  margin:20px 0;
+}
+
+.setting label{
+  display:block;
+  margin-bottom:8px;
+}
+
+.setting input{
+  width:100%;
+}
+
+#closeSettings{
+  width:100%;
+
+  padding:12px;
+
+  border:0;
+
+  border-radius:8px;
+
+  background:#333;
+
+  color:white;
+
+  cursor:pointer;
+}
+
+#closeSettings:hover{
+  background:#444;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= START SCREEN ================= -->
+
+<div id="startScreen">
+
+  <h1>GAME TEST</h1>
+
+  <p>PC VERSION</p>
+
+  <p>
+    WASD • SPACE • R • C • CHUỘT
+  </p>
+
+  <button id="startButton">
+    CLICK ĐỂ BẮT ĐẦU
+  </button>
+
+</div>
+
+<!-- ================= CROSSHAIR ================= -->
+
+<div id="crosshair"></div>
+
+<!-- ================= HUD ================= -->
+
+<div id="hud">
+
+  <div>HP</div>
+
+  <div id="hp">
+    <div id="hpBar"></div>
+  </div>
+
+  <div id="ammo">
+    7 / 7
+  </div>
+
+</div>
+
+<!-- ================= CONTROLS ================= -->
+
+<div id="info">
+
+  WASD: Di chuyển<br>
+  SPACE: Nhảy<br>
+  R: Nạp đạn<br>
+  Chuột phải: Bắn<br>
+  C: Cài đặt<br>
+  ESC: Thả chuột
+
+</div>
+
+<!-- ================= LOCK MESSAGE ================= -->
+
+<div id="lockMessage">
+  CLICK VÀO GAME ĐỂ KHÓA CHUỘT
+</div>
+
+<!-- ================= DAMAGE ================= -->
+
+<div id="damage"></div>
+
+<!-- ================= SETTINGS ================= -->
+
+<div id="settings">
+
+  <div id="settingsBox">
+
+    <h2>Cài đặt</h2>
+
+    <div class="setting">
+
+      <label>
+        Độ nhạy camera
+      </label>
+
+      <input
+        id="camSens"
+        type="range"
+        min="20"
+        max="200"
+        value="100"
+      >
+
+    </div>
+
+    <div class="setting">
+
+      <label>
+        Độ nhạy bắn
+      </label>
+
+      <input
+        id="shootSens"
+        type="range"
+        min="20"
+        max="200"
+        value="100"
+      >
+
+    </div>
+
+    <button id="closeSettings">
+      ĐÓNG
+    </button>
+
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+const scene =
+  new THREE.Scene();
+
+scene.background =
+  new THREE.Color(0x87ceeb);
+
+scene.fog =
+  new THREE.Fog(
+    0x87ceeb,
+    30,
+    180
+  );
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+const camera =
+  new THREE.PerspectiveCamera(
+    75,
+    innerWidth / innerHeight,
+    .1,
+    500
+  );
+
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer =
+  new THREE.WebGLRenderer({
+    antialias:true
+  });
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,2)
+);
+
+renderer.shadowMap.enabled=true;
+
+document.body.appendChild(
+  renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHT
+========================================================= */
+
+const ambient =
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x444444,
+    1.4
+  );
+
+scene.add(ambient);
+
+
+const sun =
+  new THREE.DirectionalLight(
+    0xffffff,
+    1.5
+  );
+
+sun.position.set(
+  30,
+  60,
+  20
+);
+
+sun.castShadow=true;
+
+scene.add(sun);
+
+
+/* =========================================================
+   GROUND
+========================================================= */
+
+const ground =
+  new THREE.Mesh(
+
+    new THREE.BoxGeometry(
+      220,
+      1,
+      220
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x394b32
+    })
+
+  );
+
+ground.position.y=-.5;
+
+ground.receiveShadow=true;
+
+scene.add(ground);
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+function box(
+  x,
+  y,
+  z,
+  sx,
+  sy,
+  sz,
+  color
+){
+
+  const mesh =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        sx,
+        sy,
+        sz
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color
+      })
+
+    );
+
+  mesh.position.set(
+    x,
+    y,
+    z
+  );
+
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+
+  scene.add(mesh);
+
+  return mesh;
+}
+
+
+for(let i=0;i<30;i++){
+
+  const x =
+    (Math.random()-.5)*170;
+
+  const z =
+    (Math.random()-.5)*170;
+
+  if(
+    Math.abs(x)<15 &&
+    Math.abs(z)<15
+  ){
+    continue;
+  }
+
+  box(
+
+    x,
+    2,
+
+    z,
+
+    5+Math.random()*6,
+
+    4+Math.random()*8,
+
+    5+Math.random()*6,
+
+    0x555555
+
+  );
+
+}
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const P = {
+
+  pos:
+    new THREE.Vector3(
+      0,
+      1.6,
+      30
+    ),
+
+  yaw:
+    Math.PI,
+
+  pitch:
+    0,
+
+  speed:
+    7,
+
+  vy:
+    0,
+
+  onGround:
+    true,
+
+  hp:
+    200
+
+};
+
+
+/* =========================================================
+   GUN
+========================================================= */
+
+const gun =
+  new THREE.Group();
+
+
+const gunBody =
+  new THREE.Mesh(
+
+    new THREE.BoxGeometry(
+      .18,
+      .18,
+      .8
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x202020
+    })
+
+  );
+
+gunBody.position.set(
+  .35,
+  -.3,
+  -.7
+);
+
+gun.add(gunBody);
+
+
+const gunBarrel =
+  new THREE.Mesh(
+
+    new THREE.BoxGeometry(
+      .1,
+      .1,
+      .45
+    ),
+
+    new THREE.MeshStandardMaterial({
+      color:0x111111
+    })
+
+  );
+
+gunBarrel.position.set(
+  .35,
+  -.3,
+  -1.25
+);
+
+gun.add(gunBarrel);
+
+
+camera.add(gun);
+
+scene.add(camera);
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+const enemies=[];
+
+
+function createEnemy(
+  x,
+  z
+){
+
+  const enemy =
+    new THREE.Group();
+
+
+  const body =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        1.2,
+        1.7,
+        .7
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x1565c0
+      })
+
+    );
+
+  body.position.y=.85;
+
+  body.userData={
+    type:"body",
+    enemy:enemy
+  };
+
+
+  const head =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        .42,
+        16,
+        12
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0xffc7a8
+      })
+
+    );
+
+  head.position.y=2;
+
+  head.userData={
+    type:"head",
+    enemy:enemy
+  };
+
+
+  enemy.add(body);
+  enemy.add(head);
+
+
+  enemy.position.set(
+    x,
+    0,
+    z
+  );
+
+
+  enemy.userData={
+    hp:200,
+    alive:true
+  };
+
+
+  scene.add(enemy);
+
+  enemies.push(enemy);
+}
+
+
+createEnemy(-8,10);
+createEnemy(8,5);
+createEnemy(-12,-15);
+createEnemy(15,-20);
+createEnemy(0,-35);
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+  camera.position.copy(
+    P.pos
+  );
+
+  camera.rotation.order =
+    "YXZ";
+
+  camera.rotation.y =
+    P.yaw;
+
+  camera.rotation.x =
+    P.pitch;
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+const keys={};
+
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    keys[e.code]=true;
+
+    if(e.code==="Space"){
+      e.preventDefault();
+    }
+
+    if(e.code==="KeyR"){
+      reload();
+    }
+
+    if(e.code==="KeyC"){
+      toggleSettings();
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keyup",
+  e=>{
+
+    keys[e.code]=false;
+
+  }
+);
+
+
+/* =========================================================
+   START / POINTER LOCK
+========================================================= */
+
+let gameStarted=false;
+
+
+const startScreen =
+  document.getElementById(
+    "startScreen"
+  );
+
+
+const startButton =
+  document.getElementById(
+    "startButton"
+  );
+
+
+const lockMessage =
+  document.getElementById(
+    "lockMessage"
+  );
+
+
+function lockMouse(){
+
+  if(!gameStarted){
+    return;
+  }
+
+  try{
+
+    const result =
+      document.body.requestPointerLock();
+
+    if(
+      result &&
+      result.catch
+    ){
+
+      result.catch(()=>{
+        showLockMessage();
+      });
+
+    }
+
+  }catch(e){
+
+    showLockMessage();
+
+  }
+
+}
+
+
+function startGame(e){
+
+  if(e){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+  }
+
+  if(!gameStarted){
+
+    gameStarted=true;
+
+    startScreen.style.display=
+      "none";
+
+    updateCamera();
+
+    /*
+      Quan trọng:
+      gọi Pointer Lock sau click
+      thông qua requestAnimationFrame.
+    */
+
+    requestAnimationFrame(()=>{
+
+      lockMouse();
+
+    });
+
+  }else{
+
+    lockMouse();
+
+  }
+
+}
+
+
+/* Nút bắt đầu */
+
+startButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+/* Click toàn màn hình bắt đầu */
+
+startScreen.addEventListener(
+  "click",
+  e=>{
+
+    if(
+      e.target===startButton
+    ){
+      return;
+    }
+
+    startGame(e);
+
+  }
+);
+
+
+/* Fallback cho Pointer */
+
+startButton.addEventListener(
+  "pointerup",
+  e=>{
+
+    if(
+      e.pointerType!=="mouse"
+    ){
+
+      startGame(e);
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   MOUSE LOOK
+========================================================= */
+
+document.addEventListener(
+  "mousemove",
+  e=>{
+
+    if(!gameStarted){
+      return;
+    }
+
+    if(
+      document.pointerLockElement !==
+      document.body
+    ){
+
+      return;
+
+    }
+
+
+    const sens =
+      Number(
+        document.getElementById(
+          "camSens"
+        ).value
+      ) / 100;
+
+
+    P.yaw -=
+      e.movementX *
+      .0025 *
+      sens;
+
+
+    P.pitch -=
+      e.movementY *
+      .0025 *
+      sens;
+
+
+    P.pitch =
+      Math.max(
+        -1.5,
+        Math.min(
+          1.5,
+          P.pitch
+        )
+      );
+
+  }
+);
+
+
+/* =========================================================
+   CLICK GAME → LOCK MOUSE
+========================================================= */
+
+renderer.domElement.addEventListener(
+  "click",
+  ()=>{
+
+    if(gameStarted){
+
+      lockMouse();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   POINTER LOCK STATUS
+========================================================= */
+
+document.addEventListener(
+  "pointerlockchange",
+  ()=>{
+
+    if(
+      document.pointerLockElement ===
+      document.body
+    ){
+
+      lockMessage.style.display=
+        "none";
+
+    }else{
+
+      if(gameStarted){
+
+        showLockMessage();
+
+      }
+
+    }
+
+  }
+);
+
+
+function showLockMessage(){
+
+  lockMessage.style.display=
+    "block";
+
+  setTimeout(()=>{
+
+    lockMessage.style.display=
+      "none";
+
+  },1800);
+
+}
+
+
+/* =========================================================
+   GUN
+========================================================= */
+
+const GUN={
+  damageBody:67,
+  damageHead:210,
+  fireRate:350,
+  mag:7
+};
+
+
+let ammo =
+  GUN.mag;
+
+
+let lastFire=0;
+
+
+function nearestBody(){
+
+  const ray =
+    new THREE.Raycaster();
+
+
+  const direction =
+    new THREE.Vector3();
+
+
+  camera.getWorldDirection(
+    direction
+  );
+
+
+  ray.set(
+    camera.position,
+    direction
+  );
+
+
+  const targets=[];
+
+
+  for(
+    const enemy of enemies
+  ){
+
+    if(
+      !enemy.userData.alive
+    ){
+      continue;
+    }
+
+
+    enemy.traverse(
+      object=>{
+
+        if(
+          object.isMesh
+        ){
+
+          targets.push(
+            object
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+
+  const hits =
+    ray.intersectObjects(
+      targets,
+      false
+    );
+
+
+  return hits.length
+    ? hits[0]
+    : null;
+
+}
+
+
+/* =========================================================
+   SHOOT
+========================================================= */
+
+function shoot(){
+
+  if(!gameStarted){
+    return;
+  }
+
+
+  const now =
+    performance.now();
+
+
+  if(
+    now-lastFire <
+    GUN.fireRate
+  ){
+
+    return;
+
+  }
+
+
+  if(ammo<=0){
+
+    reload();
+
+    return;
+
+  }
+
+
+  lastFire=now;
+
+  ammo--;
+
+  updateAmmo();
+
+
+  const hit =
+    nearestBody();
+
+
+  if(!hit){
+
+    muzzleFlash();
+
+    return;
+
+  }
+
+
+  const enemy =
+    hit.object.userData.enemy;
+
+
+  if(!enemy){
+    return;
+  }
+
+
+  const type =
+    hit.object.userData.type;
+
+
+  const damage =
+    type==="head"
+      ? GUN.damageHead
+      : GUN.damageBody;
+
+
+  enemy.userData.hp -=
+    damage;
+
+
+  showDamage(
+    damage
+  );
+
+
+  if(
+    enemy.userData.hp<=0
+  ){
+
+    enemy.userData.alive=false;
+
+    scene.remove(
+      enemy
+    );
+
+  }
+
+
+  muzzleFlash();
+
+}
+
+
+/* =========================================================
+   RIGHT MOUSE
+========================================================= */
+
+document.addEventListener(
+  "mousedown",
+  e=>{
+
+    if(
+      e.button===2 &&
+      gameStarted
+    ){
+
+      e.preventDefault();
+
+      shoot();
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "contextmenu",
+  e=>{
+
+    if(gameStarted){
+
+      e.preventDefault();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   RELOAD
+========================================================= */
+
+function reload(){
+
+  ammo =
+    GUN.mag;
+
+  updateAmmo();
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateAmmo(){
+
+  document.getElementById(
+    "ammo"
+  ).textContent =
+    ammo+
+    " / "+
+    GUN.mag;
+
+}
+
+
+function updateHP(){
+
+  const hp =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        P.hp/2
+      )
+    );
+
+
+  document.getElementById(
+    "hpBar"
+  ).style.width =
+    hp+"%";
+
+}
+
+
+/* =========================================================
+   DAMAGE
+========================================================= */
+
+function showDamage(
+  amount
+){
+
+  const element =
+    document.getElementById(
+      "damage"
+    );
+
+
+  element.textContent =
+    "-"+amount;
+
+
+  element.style.opacity =
+    "1";
+
+
+  setTimeout(()=>{
+
+    element.style.opacity =
+      "0";
+
+  },350);
+
+}
+
+
+/* =========================================================
+   MUZZLE
+========================================================= */
+
+function muzzleFlash(){
+
+  gunBody.material.color
+    .setHex(
+      0xffff00
+    );
+
+
+  setTimeout(()=>{
+
+    gunBody.material.color
+      .setHex(
+        0x202020
+      );
+
+  },45);
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const settings =
+  document.getElementById(
+    "settings"
+  );
+
+
+function toggleSettings(){
+
+  if(!gameStarted){
+    return;
+  }
+
+
+  const open =
+    settings.style.display ===
+    "flex";
+
+
+  settings.style.display =
+    open
+      ? "none"
+      : "flex";
+
+
+  if(
+    !open &&
+    document.pointerLockElement
+  ){
+
+    document.exitPointerLock();
+
+  }
+
+}
+
+
+document.getElementById(
+  "closeSettings"
+).addEventListener(
+  "click",
+  ()=>{
+
+    settings.style.display=
+      "none";
+
+    requestAnimationFrame(
+      ()=>{
+        lockMouse();
+      }
+    );
+
+  }
+);
+
+
+/* =========================================================
+   MOVEMENT
+========================================================= */
+
+const direction =
+  new THREE.Vector3();
+
+
+function movement(dt){
+
+  if(!gameStarted){
+    return;
+  }
+
+
+  direction.set(
+    0,
+    0,
+    0
+  );
+
+
+  if(keys["KeyW"]){
+    direction.z-=1;
+  }
+
+  if(keys["KeyS"]){
+    direction.z+=1;
+  }
+
+  if(keys["KeyA"]){
+    direction.x-=1;
+  }
+
+  if(keys["KeyD"]){
+    direction.x+=1;
+  }
+
+
+  if(
+    direction.lengthSq()>0
+  ){
+
+    direction.normalize();
+
+
+    const forward =
+      new THREE.Vector3(
+        -Math.sin(P.yaw),
+        0,
+        -Math.cos(P.yaw)
+      );
+
+
+    const right =
+      new THREE.Vector3(
+        Math.cos(P.yaw),
+        0,
+        -Math.sin(P.yaw)
+      );
+
+
+    const move =
+      new THREE.Vector3();
+
+
+    move.addScaledVector(
+      forward,
+      -direction.z
+    );
+
+
+    move.addScaledVector(
+      right,
+      direction.x
+    );
+
+
+    move.normalize();
+
+
+    P.pos.addScaledVector(
+      move,
+      P.speed*dt
+    );
+
+  }
+
+
+  /* JUMP */
+
+  if(
+    keys["Space"] &&
+    P.onGround
+  ){
+
+    P.vy=8;
+
+    P.onGround=false;
+
+    keys["Space"]=false;
+
+  }
+
+
+  P.vy -=
+    20*dt;
+
+
+  P.pos.y +=
+    P.vy*dt;
+
+
+  if(
+    P.pos.y<=1.6
+  ){
+
+    P.pos.y=1.6;
+
+    P.vy=0;
+
+    P.onGround=true;
+
+  }
+
+
+  /* MAP LIMIT */
+
+  P.pos.x =
+    Math.max(
+      -105,
+      Math.min(
+        105,
+        P.pos.x
+      )
+    );
+
+
+  P.pos.z =
+    Math.max(
+      -105,
+      Math.min(
+        105,
+        P.pos.z
+      )
+    );
+
+}
+
+
+/* =========================================================
+   ENEMY AI
+========================================================= */
+
+function updateEnemies(dt){
+
+  for(
+    const enemy of enemies
+  ){
+
+    if(
+      !enemy.userData.alive
+    ){
+      continue;
+    }
+
+
+    const dx =
+      P.pos.x -
+      enemy.position.x;
+
+
+    const dz =
+      P.pos.z -
+      enemy.position.z;
+
+
+    const distance =
+      Math.sqrt(
+        dx*dx+
+        dz*dz
+      );
+
+
+    if(
+      distance>4 &&
+      distance<60
+    ){
+
+      enemy.position.x +=
+        dx/distance *
+        dt *
+        .8;
+
+
+      enemy.position.z +=
+        dz/distance *
+        dt *
+        .8;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let lastTime =
+  performance.now();
+
+
+function loop(){
+
+  requestAnimationFrame(
+    loop
+  );
+
+
+  const now =
+    performance.now();
+
+
+  const dt =
+    Math.min(
+      (now-lastTime)/1000,
+      .05
+    );
+
+
+  lastTime=now;
+
+
+  movement(dt);
+
+  updateEnemies(dt);
+
+  updateCamera();
+
+  updateHP();
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+updateAmmo();
+updateHP();
+updateCamera();
+
+loop();
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect =
+      innerWidth/
+      innerHeight;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>
